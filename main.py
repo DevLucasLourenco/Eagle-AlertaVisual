@@ -5,12 +5,19 @@ from pathlib import Path
 
 class Eagle:
     
-    def __init__(self, *master:object, status:Literal['X',"OK"], mensagem:str, cor_aparencia:Literal['light','dark']='light') -> None:
-        
-        self.master = master
+    def __init__(self, *ctk_instancia:object, status:Literal['X',"OK"], mensagem:str,titulo_janela:str=None, cor_aparencia:Literal['light','dark']='light') -> None:
+        # Objetos
+        #------------------------------
+        self.master = None
+        self.ctk_instancia = ctk_instancia
         self.cor_aparencia = cor_aparencia
         self.mensagem = mensagem
         self.status = status.upper()
+        self.titulo_janela = titulo_janela if not titulo_janela == None else status
+        #------------------------------
+        
+        # Utilizações
+        #------------------------------
         self.icone_imagens:dict = {
             'OK':r'imagens/OK.png',
             'X':r'imagens/X.png',
@@ -20,10 +27,12 @@ class Eagle:
             'OK': (r'#27C870', r'#0BA752'),
             'X':(r'#C80C0C', r'#990000')
         }
+        #------------------------------
         
         
         self.tamanho_janela = '550x250'
         self.posicao_janela = None
+        
         
         
     def run(self):
@@ -35,12 +44,12 @@ class Eagle:
 
     
     def __config_GUI_inicializacao(self):
-        if not self.master:
+        if not self.ctk_instancia:
             self.master = ctk.CTk() 
-        # ctk.CTkToplevel()
-        # else:
-        # colocar um toplevel quando um master for passado ao parâmetro
-        self.master.title(f'{self.status}')
+        else:
+            self.master = self.ctk_instancia.CTkToplevel(self.master)
+
+        self.master.title(self.titulo_janela)
 
         self.largura_total = self.master.winfo_screenwidth()
         self.altura_total = self.master.winfo_screenheight()  
@@ -102,7 +111,7 @@ class FrameInferior():
     
     def criar_botao(self):
         botao_fechar = ctk.CTkButton(master=self.frame, text="Fechar", width=100, height=40, corner_radius=5, 
-                                     command=self.objeto_main.master.destroy, 
+                                     command=self.objeto_main.master.destroy, font=('Robolo',16,'bold'), 
                                      fg_color=self.objeto_main.cor_botao[self.objeto_main.status][0],
                                      hover_color=self.objeto_main.cor_botao[self.objeto_main.status][1])
         botao_fechar.pack(side='right', padx=10)
